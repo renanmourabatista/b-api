@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Data\Services\CreateTransferService;
-use App\Domain\UseCases\CreateTransfer;
+use App\Data\Contracts\Repositories\CreateTransferRepository;
+use App\Repositories\TransferRepository;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -15,11 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(CreateTransfer::class, function($app)
+        $this->app->bind(CreateTransferRepository::class, function($app)
         {
-            return new CreateTransferService(
-
-            );
+            return new TransferRepository();
         });
     }
 

@@ -1,17 +1,12 @@
 <?php
 namespace App\Domain\Models;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Transfer
+class Transfer extends Model
 {
-    protected int $id;
-
-    protected float $value;
-
-    protected Carbon $date;
-
-    protected Wallet $sender;
-
-    protected Wallet $receiver;
+    use HasFactory;
+    
+    protected $fillable = ['value', 'date', 'wallet_sender_id', 'wallet_receiver_id'];
 }

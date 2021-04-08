@@ -2,13 +2,12 @@
 
 namespace Tests\Unit\Data\Services;
 
+use App\Domain\Models\Transfer;
 use Carbon\Carbon;
-use Data\Contracts\Repositories\CreateTransferRepository;
-use Data\Contracts\Validator;
-use Data\Dto\TransferDto;
-use Data\Services\CreateTransferService;
-use Domain\Models\Wallet;
-use Domain\UseCases\CreateTransfer;
+use App\Data\Contracts\Repositories\CreateTransferRepository;
+use App\Data\Contracts\Validator;
+use App\Data\Services\CreateTransferService;
+use App\Domain\UseCases\CreateTransfer;
 use Tests\TestCase;
 
 class CreateTransferTest extends TestCase
@@ -34,19 +33,17 @@ class CreateTransferTest extends TestCase
      */
     public function shouldCreateATransfer()
     {
-        $params = [
-            'value'              => $this->faker->randomFloat(2, 0.01),
-            'wallet_sender_id'   => $this->faker->randomDigit(),
-            'wallet_receiver_id' => $this->faker->randomDigit()
-        ];
-
-        $walletSender   = \Mockery::mock(Wallet::class);
-        $walletReceiver = \Mockery::mock(Wallet::class);
-
         Carbon::setTestNow($this->faker->dateTime);
         $date = Carbon::now();
 
-        $transferDtoExpected = new TransferDto($params['value'], $walletSender, $walletReceiver, $date);
+        $params = [
+            'value'              => $this->faker->randomFloat(2, 0.01),
+            'wallet_sender_id'   => $this->faker->randomDigit(),
+            'wallet_receiver_id' => $this->faker->randomDigit(),
+            'date'               => $date
+        ];
+
+        $transferExpected = Transfer::factory()->make($params);
 
         $this->validator->allows('setRules');
         $this->validator->allows('setMessages');
@@ -55,12 +52,12 @@ class CreateTransferTest extends TestCase
         $this->repository
             ->shouldReceive('create')
             ->with($params)
-            ->andReturn($transferDtoExpected)
+            ->andReturn($transferExpected)
             ->once();
 
         $result = $this->service->create($params);
 
-        $this->assertEquals($transferDtoExpected, $result);
+        $this->assertEquals($transferExpected, $result);
     }
 
     /**
@@ -84,12 +81,12 @@ class CreateTransferTest extends TestCase
             'wallet_receiver_id.not_same_wallet' => trans('transfer.wallet_sender_id.exists'),
         ];
 
-        $transferDto = \Mockery::mock(TransferDto::class);
+        $transfer = \Mockery::mock(Transfer::class);
 
         $this->repository
             ->shouldReceive('create')
             ->withAnyArgs()
-            ->andReturn($transferDto)
+            ->andReturn($transfer)
             ->once();
 
         $params = [];
