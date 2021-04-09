@@ -2,28 +2,21 @@
 
 namespace App\Domain\Models;
 
-use Domain\Models\Collections\Transfers;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Wallet
+class Wallet extends Model
 {
-    private int $id;
+    protected $fillable = ['amount'];
 
-    private float $amount;
-
-    private Transfers $transfers;
-
-    public function getAmount(): float
+    public function transfers(): BelongsToMany
     {
-        return $this->amount;
+        return $this->belongsToMany(Transfer::class, 'transfer_wallet', 'wallet_id', 'transfer_id');
     }
 
-    public function getTransfers(): Transfers
+    public function owner(): BelongsTo
     {
-        return $this->transfers;
-    }
-
-    public function setAmount(float $amount): void
-    {
-        $this->amount = $amount;
+        return $this->belongsTo(Person::class, 'person_id', 'id');
     }
 }

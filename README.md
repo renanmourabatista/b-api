@@ -3,4 +3,7 @@
 * docker-compose up
 * localhost:88
 
-docker-compose -f ./docker/docker-compose.yml up
+#### Comandos do docker
+
+- `docker exec -it bank.api php artisan migrate`
+- `docker exec -it bank.api php artisan db:seed`

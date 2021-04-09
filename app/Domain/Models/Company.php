@@ -2,7 +2,15 @@
 
 namespace App\Domain\Models;
 
-class Company
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Company extends Model
 {
-    private string $cnpj;
+    protected $fillable = ['cnpj'];
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'person_id', 'id');
+    }
 }

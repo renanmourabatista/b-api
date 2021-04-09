@@ -1,18 +1,25 @@
 <?php
 namespace App\Domain\Models;
 
-class Person
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+class Person extends Model
 {
-    private string $cpf;
+    protected $fillable = ['cpf', 'name', 'user_id'];
 
-    private string $name;
-
-    private Wallet $account;
-
-    private Company $company;
-
-    private function isAnStoreOwner(): bool
+    public function isAnStoreOwner(): bool
     {
         return $this->company !== null;
+    }
+
+    public function company(): HasOne
+    {
+        return $this->HasOne(Company::class, 'person_id', 'id');
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->HasOne(Wallet::class, 'person_id', 'id');
     }
 }
