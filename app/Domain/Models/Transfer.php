@@ -12,8 +12,15 @@ class Transfer extends Model
     const STATUS_PENDING        = 0;
     const STATUS_AUTHORIZED     = 1;
     const STATUS_NOT_AUTHORIZED = 2;
-    
-    protected $fillable = ['value', 'status', 'notification_date', 'wallet_sender_id', 'wallet_receiver_id'];
+
+    protected $fillable = [
+        'value',
+        'status',
+        'notification_date',
+        'wallet_sender_id',
+        'wallet_receiver_id',
+        'transfer_reverted_id'
+    ];
 
     public function senderWallet(): BelongsTo
     {
@@ -23,5 +30,10 @@ class Transfer extends Model
     public function receiverWallet(): BelongsTo
     {
         return $this->belongsTo(Wallet::class, 'wallet_receiver_id', 'id');
+    }
+
+    public function revertedFrom(): BelongsTo
+    {
+        return $this->belongsTo(Transfer::class, 'transfer_reverted_id', 'id');
     }
 }

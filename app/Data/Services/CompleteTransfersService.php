@@ -8,7 +8,6 @@ use App\Domain\UseCases\CompleteTransfers;
 use Carbon\Carbon;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
-use Psr\Http\Message\ResponseInterface;
 
 class CompleteTransfersService implements CompleteTransfers
 {
@@ -25,7 +24,7 @@ class CompleteTransfersService implements CompleteTransfers
         ClientInterface $api,
     ) {
         $this->repository = $repository;
-        $this->api = $api;
+        $this->api        = $api;
     }
 
     public function authorizePendingTransfers(int $page = 1): void
@@ -33,7 +32,7 @@ class CompleteTransfersService implements CompleteTransfers
         $itemsPerPage = 100;
         $paginator    = $this->repository->searchBy(['status' => Transfer::STATUS_PENDING], $page, $itemsPerPage);
 
-        foreach ( $paginator->items() as $transfer) {
+        foreach ($paginator->items() as $transfer) {
             try {
                 $this->authorize($transfer);
             } catch (ClientException $e) {
@@ -41,7 +40,7 @@ class CompleteTransfersService implements CompleteTransfers
             }
         }
 
-        if($page === $paginator->lastPage()) {
+        if ($page === $paginator->lastPage()) {
             return;
         }
 
@@ -54,7 +53,7 @@ class CompleteTransfersService implements CompleteTransfers
         $itemsPerPage = 100;
         $paginator    = $this->repository->searchBy(['status' => Transfer::STATUS_AUTHORIZED], $page, $itemsPerPage);
 
-        foreach ( $paginator->items() as $transfer) {
+        foreach ($paginator->items() as $transfer) {
             try {
                 $this->notify($transfer);
             } catch (ClientException $e) {
@@ -62,7 +61,7 @@ class CompleteTransfersService implements CompleteTransfers
             }
         }
 
-        if($page === $paginator->lastPage()) {
+        if ($page === $paginator->lastPage()) {
             return;
         }
 
@@ -72,7 +71,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     private function notify(Transfer $transfer): void
     {
-        if(!$transfer->receiverWallet->user->isAShopkeeper()) {
+        if (!$transfer->receiverWallet->user->isAShopkeeper()) {
             return;
         }
 

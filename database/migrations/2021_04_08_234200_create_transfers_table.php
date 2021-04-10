@@ -22,11 +22,16 @@ class CreateTransfersTable extends Migration
             $table->unsignedBigInteger('wallet_sender_id');
             $table->unsignedBigInteger('wallet_receiver_id');
             $table->dateTime('notification_date')->nullable();
+            $table->unsignedBigInteger('transfer_reverted_id')->nullable();
 
             $table->foreign('wallet_sender_id')->references('id')->on('wallets');
             $table->foreign('wallet_receiver_id')->references('id')->on('wallets');
 
             $table->timestamps();
+        });
+
+        Schema::table('transfers', function (Blueprint $table) {
+            $table->foreign('transfer_reverted_id')->references('id')->on('transfer');
         });
     }
 
@@ -40,6 +45,7 @@ class CreateTransfersTable extends Migration
         Schema::table('transfers', function (Blueprint $table) {
             $table->dropForeign(['wallet_sender_id']);
             $table->dropForeign(['wallet_receiver_id']);
+            $table->dropForeign(['transfer_reverted_id']);
         });
 
         Schema::dropIfExists('transfers');

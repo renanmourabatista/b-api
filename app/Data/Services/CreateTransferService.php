@@ -28,6 +28,9 @@ class CreateTransferService implements CreateTransfer
     public function create(array $params): Transfer
     {
         $this->validate($params);
+
+        $params['wallet_sender_id'] = auth()->user()->person->wallet->id;
+
         return $this->repository->create($params);
     }
 
@@ -43,8 +46,9 @@ class CreateTransferService implements CreateTransfer
     {
         $this->validator->setRules(
             [
-                'value'              => 'required|min:0.01',
-                'wallet_receiver_id' => 'required|exists:wallets,id',
+                'value'                => 'required|min:0.01',
+                'wallet_receiver_id'   => 'required|exists:wallets,id',
+                'transfer_reverted_id' => 'nullable|exists:transfers,id'
             ]
         );
 
@@ -53,7 +57,8 @@ class CreateTransferService implements CreateTransfer
                 'value.required'                     => trans('messages.transfer.value.required'),
                 'value.min'                          => trans('messages.transfer.value.min'),
                 'wallet_receiver_id.required'        => trans('messages.transfer.wallet_receiver_id.required'),
-                'wallet_receiver_id.exists'          => trans('messages.transfer.wallet_receiver_id.exists')
+                'wallet_receiver_id.exists'          => trans('messages.transfer.wallet_receiver_id.exists'),
+                'transfer_reverted_id.exists'        => trans('messages.transfer.transfer_reverted_id.exists')
             ]
         );
 

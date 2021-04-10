@@ -7,4 +7,6 @@ return [
     'transfer.value.min'                   => 'Please enter a minimum value of :min.',
     'transfer.wallet_receiver_id.required' => 'Receiver wallet is required.',
     'transfer.wallet_receiver_id.exists'   => 'Receiver wallet not found.',
+    'transfer.transfer_reverted_id.exists' => 'Transfer can\'t exists.',
+    'transfer.revert.unauthorized'         => 'It is not allowed to reverse this transfer.'
 ];

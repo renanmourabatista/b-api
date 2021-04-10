@@ -25,7 +25,7 @@ class Wallet extends Model
 
     public function getTotalAmount(): float
     {
-        return $this->amount - $this->pendingTransfersSend()->sum('value');
+        return $this->amount - $this->pendingTransfersSend->sum('value');
     }
 
     public function transfersReceived(): HasMany
