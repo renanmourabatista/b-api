@@ -52,13 +52,14 @@ class CreateTransferTest extends TestCase
 
         $params = $this->getDefaultParams();
         $params += [
-            'value'              => $this->faker->randomFloat(2, 0.01),
-            'date'               => $date
+            'value' => $this->faker->randomFloat(2, 0.01, 99),
+            'date'  => $date
         ];
 
         $transferExpected = Transfer::factory()->make($params);
 
         $this->initializeValidatorGeneric();
+        $this->setDefaultAmountFotUserWallet();
 
         $this->repository
             ->shouldReceive('create')
@@ -69,6 +70,18 @@ class CreateTransferTest extends TestCase
         $result = $this->service->create($params);
 
         $this->assertEquals($transferExpected, $result);
+    }
+
+    private function setDefaultAmountFotUserWallet()
+    {
+        $walletAmount = $this->faker->randomFloat(2, 99, 999);
+
+        $this->user
+            ->person
+            ->wallet
+            ->allows('getTotalAmount')
+            ->andReturn($walletAmount)
+            ->once();
     }
 
     /**
@@ -89,6 +102,8 @@ class CreateTransferTest extends TestCase
         ];
 
         $transfer = \Mockery::mock(Transfer::class);
+
+        $this->setDefaultAmountFotUserWallet();
 
         $this->repository
             ->shouldReceive('create')
@@ -126,7 +141,9 @@ class CreateTransferTest extends TestCase
 
     private function getDefaultParams(): array
     {
-        return ['wallet_receiver_id' => $this->user->person->wallet->id + 1];
+        return [
+            'wallet_receiver_id' => $this->user->person->wallet->id + 1
+        ];
     }
 
     /**
@@ -160,8 +177,34 @@ class CreateTransferTest extends TestCase
 
         $this->actingAs($user);
 
-        $params = $this->getDefaultParams();
+        $params                       = $this->getDefaultParams();
         $params['wallet_receiver_id'] = $user->person->wallet->id;
+
+        $this->service->create($params);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenWalletHasNotFunds()
+    {
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectErrorMessage(trans('messages.transfer.value.insufficient_funds'));
+        $this->initializeValidatorGeneric();
+
+        $walletAmount    = $this->faker->randomFloat(2, 1, 999);
+        $valueToTransfer = $walletAmount + $this->faker->randomFloat(2, 1);
+
+        $this->user
+            ->person
+            ->wallet
+            ->shouldReceive('getTotalAmount')
+            ->andReturn($valueToTransfer)
+            ->once();
+
+        $params = $this->getDefaultParams();
+
+        $params['value'] = $valueToTransfer;
 
         $this->service->create($params);
     }

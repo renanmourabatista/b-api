@@ -36,6 +36,7 @@ class CreateTransferService implements CreateTransfer
         $this->validateData($params);
         $this->validateUserAShopkeeper();
         $this->validateNewTransferIsToSameWalletOfUser($params);
+        $this->validateWalletHasFundsToTransfer($params);
     }
 
     private function validateData(array $params): void
@@ -74,6 +75,15 @@ class CreateTransferService implements CreateTransfer
 
         if($user->person->wallet->id === ($params['wallet_receiver_id'] ?? null)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.same_wallet.unauthorized'));
+        }
+    }
+
+    private function validateWalletHasFundsToTransfer(array $params): void
+    {
+        $user = auth()->user();
+
+        if($user->person->wallet->getTotalAmount() <= ($params['value'] ?? 0)) {
+            throw new AccessDeniedHttpException(trans('messages.transfer.value.insufficient_funds'));
         }
     }
 }
