@@ -2,12 +2,18 @@
 
 namespace Tests\Unit\Data\Services;
 
+use App\Domain\Models\Company;
+use App\Domain\Models\Person;
 use App\Domain\Models\Transfer;
+use App\Domain\Models\User;
+use App\Domain\Models\Wallet;
 use Carbon\Carbon;
 use App\Data\Contracts\Repositories\CreateTransferRepository;
 use App\Data\Contracts\Validator;
 use App\Data\Services\CreateTransferService;
 use App\Domain\UseCases\CreateTransfer;
+use Mockery\Mock;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Tests\TestCase;
 
 class CreateTransferTest extends TestCase
@@ -18,12 +24,17 @@ class CreateTransferTest extends TestCase
 
     private Validator $validator;
 
+    private User|Mock $user;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->repository = \Mockery::mock(CreateTransferRepository::class);
-        $this->validator = \Mockery::mock(Validator::class);
+        $this->validator  = \Mockery::mock(Validator::class);
+
+        $this->user = $this->getUserToAuth();
+        $this->actingAs($this->user);
 
         $this->service = new CreateTransferService($this->repository, $this->validator);
     }
@@ -36,18 +47,15 @@ class CreateTransferTest extends TestCase
         Carbon::setTestNow($this->faker->dateTime);
         $date = Carbon::now();
 
-        $params = [
+        $params = $this->getDefaultParams();
+        $params += [
             'value'              => $this->faker->randomFloat(2, 0.01),
-            'wallet_sender_id'   => $this->faker->randomDigit(),
-            'wallet_receiver_id' => $this->faker->randomDigit(),
             'date'               => $date
         ];
 
         $transferExpected = Transfer::factory()->make($params);
 
-        $this->validator->allows('setRules');
-        $this->validator->allows('setMessages');
-        $this->validator->allows('validate');
+        $this->initializeValidatorGeneric();
 
         $this->repository
             ->shouldReceive('create')
@@ -67,18 +75,14 @@ class CreateTransferTest extends TestCase
     {
         $rules = [
             'value'              => 'required|min:0.01',
-            'wallet_sender_id'   => 'required|exists:wallets,id',
-            'wallet_receiver_id' => 'required|exists:wallets,id|not_same_wallet',
+            'wallet_receiver_id' => 'required|exists:wallets,id',
         ];
 
         $messages = [
-            'value.required'                     => trans('transfer.value.required'),
-            'value.min'                          => trans('transfer.value.min'),
-            'wallet_sender_id.required'          => trans('transfer.wallet_sender_id.required'),
-            'wallet_sender_id.exists'            => trans('transfer.wallet_sender_id.exists'),
-            'wallet_receiver_id.required'        => trans('transfer.wallet_sender_id.required'),
-            'wallet_receiver_id.exists'          => trans('transfer.wallet_sender_id.exists'),
-            'wallet_receiver_id.not_same_wallet' => trans('transfer.wallet_sender_id.exists'),
+            'value.required'              => trans('messages.transfer.value.required'),
+            'value.min'                   => trans('messages.transfer.value.min'),
+            'wallet_receiver_id.required' => trans('messages.transfer.wallet_receiver_id.required'),
+            'wallet_receiver_id.exists'   => trans('messages.transfer.wallet_receiver_id.exists')
         ];
 
         $transfer = \Mockery::mock(Transfer::class);
@@ -89,11 +93,72 @@ class CreateTransferTest extends TestCase
             ->andReturn($transfer)
             ->once();
 
-        $params = [];
+        $params = $this->getDefaultParams();
 
         $this->validator->shouldReceive('setRules')->with($rules)->once();
         $this->validator->shouldReceive('setMessages')->with($messages)->once();
         $this->validator->shouldReceive('validate')->with($params)->once();
+
+        $this->service->create($params);
+    }
+
+    private function getUserToAuth(): User|Mock
+    {
+        $user                     = \Mockery::mock(User::class)->makePartial();
+        $person                   = \Mockery::mock(Person::class)->makePartial();
+        $person->company          = null;
+        $user->person             = $person;
+        $user->person->wallet     = \Mockery::mock(Wallet::class)->makePartial();
+        $user->person->wallet->id = $this->faker->randomDigit();
+
+        return $user;
+    }
+
+    private function initializeValidatorGeneric(): void
+    {
+        $this->validator->allows('setRules');
+        $this->validator->allows('setMessages');
+        $this->validator->allows('validate');
+    }
+
+    private function getDefaultParams(): array
+    {
+        return ['wallet_receiver_id' => $this->user->person->wallet->id + 1];
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenUserIsAStoreOwner()
+    {
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectErrorMessage(trans('messages.transfer.store_owner.unauthorized'));
+        $this->initializeValidatorGeneric();
+
+        $user                  = $this->getUserToAuth();
+        $user->person->company = \Mockery::mock(Company::class);
+
+        $this->actingAs($user);
+        $params = $this->getDefaultParams();
+
+        $this->service->create($params);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenUserTryToTransferToYourWallet()
+    {
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectErrorMessage(trans('messages.transfer.same_wallet.unauthorized'));
+        $this->initializeValidatorGeneric();
+
+        $user = $this->getUserToAuth();
+
+        $this->actingAs($user);
+
+        $params = $this->getDefaultParams();
+        $params['wallet_receiver_id'] = $user->person->wallet->id;
 
         $this->service->create($params);
     }

@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Validator as LaravelValidator;
 
 class ValidatorHelper implements Validator
 {
-    private array $messages;
+    private array $messages = [];
 
-    private array $rules;
+    private array $rules = [];
 
     public function setRules(array $rules): void
     {
