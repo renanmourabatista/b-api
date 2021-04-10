@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Repositories;
 
-use \App\Data\Contracts\Repositories\CreateTransferRepository;
 use App\Domain\Models\Transfer;
+use \App\Data\Contracts\Repositories\TransferRepository as TransferRepositoryContract;
 
-class TransferRepository implements CreateTransferRepository
+class TransferRepository implements TransferRepositoryContract
 {
+    use SearchByRepository;
+
     public function model(): string
     {
         return Transfer::class;
@@ -14,5 +17,15 @@ class TransferRepository implements CreateTransferRepository
     public function create(array $params): Transfer
     {
         return $this->model()::create($params);
+    }
+
+    public function get(int $id): Transfer
+    {
+        return $this->model()::find($id);
+    }
+
+    protected function exactlyMatchFields(): array
+    {
+        return ['status'];
     }
 }

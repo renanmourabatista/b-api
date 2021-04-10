@@ -1,9 +1,9 @@
 <?php
 namespace App\Domain\UseCases;
 
-use App\Domain\Models\Company;
+use App\Domain\Models\Wallet;
 
 interface GetWallet
 {
-    public function create(array $params): Company;
+    public function get(int $id): Wallet;
 }

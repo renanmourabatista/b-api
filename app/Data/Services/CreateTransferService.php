@@ -2,25 +2,24 @@
 
 namespace App\Data\Services;
 
-use App\Data\Contracts\Repositories\CreateTransferRepository;
+use App\Data\Contracts\Repositories\TransferRepository;
 use App\Data\Contracts\Validator;
 use App\Domain\Models\Transfer;
 use App\Domain\UseCases\CreateTransfer;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class CreateTransferService implements CreateTransfer
 {
-    private CreateTransferRepository $repository;
+    private TransferRepository $repository;
 
     private Validator $validator;
 
     /**
      * CreateTransferService constructor.
-     * @param CreateTransferRepository $repository
+     * @param TransferRepository $repository
      * @param Validator $validator
      */
-    public function __construct(CreateTransferRepository $repository, Validator $validator)
+    public function __construct(TransferRepository $repository, Validator $validator)
     {
         $this->repository = $repository;
         $this->validator  = $validator;
@@ -35,7 +34,7 @@ class CreateTransferService implements CreateTransfer
     private function validate(array $params): void
     {
         $this->validateData($params);
-        $this->validateUserAStoreOwner();
+        $this->validateUserAShopkeeper();
         $this->validateNewTransferIsToSameWalletOfUser($params);
     }
 
@@ -60,11 +59,11 @@ class CreateTransferService implements CreateTransfer
         $this->validator->validate($params);
     }
 
-    private function validateUserAStoreOwner(): void
+    private function validateUserAShopkeeper(): void
     {
         $user = auth()->user();
 
-        if($user->person->isAnStoreOwner()) {
+        if($user->person->isAShopkeeper()) {
             throw new AccessDeniedHttpException(trans('messages.transfer.store_owner.unauthorized'));
         }
     }

@@ -21,6 +21,7 @@ class CreateTransfersTable extends Migration
 
             $table->unsignedBigInteger('wallet_sender_id');
             $table->unsignedBigInteger('wallet_receiver_id');
+            $table->dateTime('notification_date')->nullable();
 
             $table->foreign('wallet_sender_id')->references('id')->on('wallets');
             $table->foreign('wallet_receiver_id')->references('id')->on('wallets');

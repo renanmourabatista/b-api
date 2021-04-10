@@ -8,7 +8,7 @@ class Person extends Model
 {
     protected $fillable = ['cpf', 'name'];
 
-    public function isAnStoreOwner(): bool
+    public function isAShopkeeper(): bool
     {
         return $this->company !== null;
     }

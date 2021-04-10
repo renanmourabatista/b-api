@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use App\Data\Contracts\Repositories\CreateTransferRepository;
+use \App\Data\Contracts\Repositories\TransferRepository as TransferRepositoryContract;
+use \App\Data\Contracts\Repositories\WalletRepository as WalletRepositoryContract;
 use App\Repositories\TransferRepository;
+use App\Repositories\WalletRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -15,9 +17,14 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(CreateTransferRepository::class, function($app)
+        $this->app->bind(TransferRepositoryContract::class, function($app)
         {
             return new TransferRepository();
+        });
+
+        $this->app->bind(WalletRepositoryContract::class, function($app)
+        {
+            return new WalletRepository();
         });
     }
 

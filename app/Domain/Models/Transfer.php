@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Transfer extends Model
 {
     use HasFactory;
+
+    const STATUS_PENDING        = 0;
+    const STATUS_AUTHORIZED     = 1;
+    const STATUS_NOT_AUTHORIZED = 2;
     
-    protected $fillable = ['value'];
+    protected $fillable = ['value', 'status', 'notification_date', 'wallet_sender_id', 'wallet_receiver_id'];
 
     public function senderWallet(): BelongsTo
     {

@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Data\Services;
 
+use App\Data\Contracts\Repositories\TransferRepository;
 use App\Domain\Models\Company;
 use App\Domain\Models\Person;
 use App\Domain\Models\Transfer;
 use App\Domain\Models\User;
 use App\Domain\Models\Wallet;
 use Carbon\Carbon;
-use App\Data\Contracts\Repositories\CreateTransferRepository;
 use App\Data\Contracts\Validator;
 use App\Data\Services\CreateTransferService;
 use App\Domain\UseCases\CreateTransfer;
@@ -20,7 +20,7 @@ class CreateTransferTest extends TestCase
 {
     private CreateTransfer $service;
 
-    private CreateTransferRepository $repository;
+    private TransferRepository $repository;
 
     private Validator $validator;
 
@@ -30,13 +30,16 @@ class CreateTransferTest extends TestCase
     {
         parent::setUp();
 
-        $this->repository = \Mockery::mock(CreateTransferRepository::class);
+        $this->repository = \Mockery::mock(TransferRepository::class);
         $this->validator  = \Mockery::mock(Validator::class);
+
+        $this->app->instance(TransferRepository::class, $this->repository);
+        $this->app->instance(Validator::class, $this->validator);
 
         $this->user = $this->getUserToAuth();
         $this->actingAs($this->user);
 
-        $this->service = new CreateTransferService($this->repository, $this->validator);
+        $this->service = $this->app->make(CreateTransferService::class);
     }
 
     /**
@@ -129,7 +132,7 @@ class CreateTransferTest extends TestCase
     /**
      * @test
      */
-    public function shouldFailWhenUserIsAStoreOwner()
+    public function shouldFailWhenUserIsAShopkeeper()
     {
         $this->expectException(AccessDeniedHttpException::class);
         $this->expectErrorMessage(trans('messages.transfer.store_owner.unauthorized'));
