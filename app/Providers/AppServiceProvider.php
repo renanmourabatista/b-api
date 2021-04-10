@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Data\Services\CreateTransferService;
+use App\Domain\UseCases\CreateTransfer;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ClientInterface::class, function($app)
         {
             return $app->make(Client::class);
+        });
+
+        $this->app->bind(CreateTransfer::class, function($app)
+        {
+            return $app->make(CreateTransferService::class);
         });
     }
 

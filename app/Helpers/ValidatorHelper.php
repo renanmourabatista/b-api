@@ -18,7 +18,7 @@ class ValidatorHelper implements Validator
 
     public function setMessages(array $messages): void
     {
-        $this->rules = $messages;
+        $this->messages = $messages;
     }
 
     public function validate(array $params): void

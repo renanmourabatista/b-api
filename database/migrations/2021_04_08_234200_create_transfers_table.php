@@ -31,7 +31,7 @@ class CreateTransfersTable extends Migration
         });
 
         Schema::table('transfers', function (Blueprint $table) {
-            $table->foreign('transfer_reverted_id')->references('id')->on('transfer');
+            $table->foreign('transfer_reverted_id')->references('id')->on('transfers');
         });
     }
 

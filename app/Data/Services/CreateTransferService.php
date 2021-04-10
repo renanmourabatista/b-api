@@ -30,6 +30,7 @@ class CreateTransferService implements CreateTransfer
         $this->validate($params);
 
         $params['wallet_sender_id'] = auth()->user()->person->wallet->id;
+        $params['status']           = Transfer::STATUS_PENDING;
 
         return $this->repository->create($params);
     }
@@ -87,7 +88,7 @@ class CreateTransferService implements CreateTransfer
     {
         $user = auth()->user();
 
-        if($user->person->wallet->getTotalAmount() <= ($params['value'] ?? 0)) {
+        if($user->person->wallet->getTotalAmount() < ($params['value'] ?? 0)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.value.insufficient_funds'));
         }
     }

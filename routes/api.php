@@ -33,8 +33,8 @@ Route::group(
 Route::group(
     [
         'middleware' => 'api',
-        'prefix'     => 'transfers'
+        'prefix'     => 'wallets'
     ], function ($router) {
-    Route::post('/', 'App\Presentation\Controllers\CreateTransferController@handle');
+    Route::post('/transfers', 'App\Presentation\Controllers\CreateTransferController@handle');
 });
 

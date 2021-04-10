@@ -19,12 +19,12 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(TransferRepositoryContract::class, function($app)
         {
-            return new TransferRepository();
+            return  $app->make(TransferRepository::class);
         });
 
         $this->app->bind(WalletRepositoryContract::class, function($app)
         {
-            return new WalletRepository();
+            return $app->make(WalletRepository::class);
         });
     }
 

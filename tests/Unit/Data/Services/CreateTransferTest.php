@@ -145,7 +145,8 @@ class CreateTransferTest extends TestCase
     {
         return [
             'wallet_receiver_id' => $this->user->person->wallet->id + 1,
-            'wallet_sender_id'   => $this->user->person->wallet->id
+            'wallet_sender_id'   => $this->user->person->wallet->id,
+            'status'             => Transfer::STATUS_PENDING
         ];
     }
 
@@ -202,7 +203,7 @@ class CreateTransferTest extends TestCase
             ->person
             ->wallet
             ->shouldReceive('getTotalAmount')
-            ->andReturn($valueToTransfer)
+            ->andReturn($walletAmount)
             ->once();
 
         $params = $this->getDefaultParams();
