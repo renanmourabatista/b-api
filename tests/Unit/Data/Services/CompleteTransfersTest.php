@@ -68,6 +68,26 @@ class CompleteTransfersTest extends TestCase
     /**
      * @test
      */
+    public function shouldNotAuthorizePendingTransfers()
+    {
+        $transfer = $this->getTransferMock();
+        $items    = new Collection([$transfer]);
+
+        $page         = 1;
+        $lastPage     = $this->faker->numberBetween(1, 9);
+        $itemsPerPage = 100;
+
+        $paginator = $this->getPaginatorMock($items, $lastPage);
+        $this->shouldFindItemsPerPage($page, $lastPage, $itemsPerPage, $paginator, Transfer::STATUS_PENDING);
+        $this->shouldGetUnauthorizedFromExternalApi($lastPage);
+        $this->shouldUpdateStatusOfTransfer($transfer, $items, Transfer::STATUS_NOT_AUTHORIZED, $lastPage);
+
+        $this->service->authorizePendingTransfers();
+    }
+
+    /**
+     * @test
+     */
     public function shouldNotifyAuthorizedTransfers()
     {
         $transfer                       = $this->getTransferMock();
@@ -228,6 +248,18 @@ class CompleteTransfersTest extends TestCase
         $mockBody
             ->shouldReceive('getContents')
             ->andReturn('{ "message" : "Autorizado" }')
+            ->times($lastPage);
+
+        $this->shouldRequestAPi($mockBody, $mockResponse, $lastPage, config('services.transfer.authorization'));
+    }
+
+    private function shouldGetUnauthorizedFromExternalApi(int $lastPage): void
+    {
+        $mockResponse = \Mockery::mock(ResponseInterface::class);
+        $mockBody     = \Mockery::mock();
+        $mockBody
+            ->shouldReceive('getContents')
+            ->andReturn('{ "message" : "Não Autorizado" }')
             ->times($lastPage);
 
         $this->shouldRequestAPi($mockBody, $mockResponse, $lastPage, config('services.transfer.authorization'));

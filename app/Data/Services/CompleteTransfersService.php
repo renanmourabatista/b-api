@@ -8,6 +8,7 @@ use App\Domain\UseCases\CompleteTransfers;
 use Carbon\Carbon;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\ResponseInterface;
 
 class CompleteTransfersService implements CompleteTransfers
 {
@@ -97,9 +98,22 @@ class CompleteTransfersService implements CompleteTransfers
         $textResponse = $result->getBody()->getContents();
         $response     = json_decode($textResponse);
 
+        $this->authorized($response, $transfer);
+        $this->notAuthorized($response, $transfer);
+    }
+
+    private function authorized(\stdClass $response, Transfer $transfer): void
+    {
         if (isset($response->message) && $response->message === self::SERVICE_TRANSFER_AUTHORIZED) {
             $this->repository->update(['status' => Transfer::STATUS_AUTHORIZED], $transfer->id);
             $this->updateWalletsAmounts($transfer);
+        }
+    }
+
+    private function notAuthorized(\stdClass $response, Transfer $transfer): void
+    {
+        if (isset($response->message) && $response->message !== self::SERVICE_TRANSFER_AUTHORIZED) {
+            $this->repository->update(['status' => Transfer::STATUS_NOT_AUTHORIZED], $transfer->id);
         }
     }
 
