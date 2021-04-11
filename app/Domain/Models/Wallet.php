@@ -33,7 +33,8 @@ class Wallet extends Model
 
     public function transfersReceived(): HasMany
     {
-        return $this->hasMany(Transfer::class, 'wallet_receiver_id', 'id');
+        return $this->hasMany(Transfer::class, 'wallet_receiver_id', 'id')
+            ->where('status', '=', Transfer::STATUS_AUTHORIZED);
     }
 
     public function owner(): BelongsTo

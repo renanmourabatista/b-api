@@ -36,5 +36,6 @@ Route::group(
         'prefix'     => 'wallets'
     ], function ($router) {
     Route::post('/transfers', 'App\Presentation\Controllers\CreateTransferController@handle');
+    Route::put('/transfers/{id}/revert', 'App\Presentation\Controllers\RevertTransferController@handle');
 });
 

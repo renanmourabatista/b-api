@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Data\Services\CreateTransferService;
+use App\Data\Services\RevertTransferService;
 use App\Domain\UseCases\CreateTransfer;
+use App\Domain\UseCases\RevertTransfer;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreateTransfer::class, function($app)
         {
             return $app->make(CreateTransferService::class);
+        });
+
+        $this->app->bind(RevertTransfer::class, function($app)
+        {
+            return $app->make(RevertTransferService::class);
         });
     }
 
