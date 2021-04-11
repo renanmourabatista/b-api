@@ -14,6 +14,7 @@ use App\Data\Services\CreateTransferService;
 use App\Domain\UseCases\CreateTransfer;
 use Mockery\Mock;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Tests\TestCase;
 
 class CreateTransferTest extends TestCase
@@ -93,16 +94,16 @@ class CreateTransferTest extends TestCase
     public function shouldValidateToTransfer()
     {
         $rules = [
-            'value'                => 'required|min:0.01',
-            'wallet_payee_id'   => 'required|exists:wallets,id',
+            'value'                => 'required',
+            'wallet_payee_id'      => 'required|exists:wallets,id',
             'transfer_reverted_id' => 'nullable|exists:transfers,id'
         ];
 
         $messages = [
             'value.required'              => trans('messages.transfer.value.required'),
             'value.min'                   => trans('messages.transfer.value.min'),
-            'wallet_payee_id.required' => trans('messages.transfer.wallet_payee_id.required'),
-            'wallet_payee_id.exists'   => trans('messages.transfer.wallet_payee_id.exists'),
+            'wallet_payee_id.required'    => trans('messages.transfer.wallet_payee_id.required'),
+            'wallet_payee_id.exists'      => trans('messages.transfer.wallet_payee_id.exists'),
             'transfer_reverted_id.exists' => trans('messages.transfer.transfer_reverted_id.exists')
         ];
 
@@ -151,8 +152,9 @@ class CreateTransferTest extends TestCase
     {
         return [
             'wallet_payee_id' => $this->user->person->wallet->id + 1,
-            'wallet_payer_id'   => $this->user->person->wallet->id,
-            'status'             => Transfer::STATUS_PENDING
+            'wallet_payer_id' => $this->user->person->wallet->id,
+            'status'          => Transfer::STATUS_PENDING,
+            'value'           => 0.01
         ];
     }
 
@@ -187,7 +189,7 @@ class CreateTransferTest extends TestCase
 
         $this->actingAs($user);
 
-        $params                       = $this->getDefaultParams();
+        $params                    = $this->getDefaultParams();
         $params['wallet_payee_id'] = $user->person->wallet->id;
 
         $this->service->create($params);
@@ -215,6 +217,55 @@ class CreateTransferTest extends TestCase
         $params = $this->getDefaultParams();
 
         $params['value'] = $valueToTransfer;
+
+        $this->service->create($params);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenTransferHasNotMinimalValue()
+    {
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectErrorMessage(trans('messages.transfer.value.min'));
+        $this->initializeValidatorGeneric();
+
+        $walletAmount = $this->faker->randomFloat(2, 1, 999);
+
+        $this->user
+            ->person
+            ->wallet
+            ->shouldReceive('getTotalAmount')
+            ->andReturn($walletAmount)
+            ->once();
+
+        $params = $this->getDefaultParams();
+
+        $params['value'] = 0.009;
+
+        $this->service->create($params);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldFailWhenTryRevertANonRevertedTransfer()
+    {
+        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectErrorMessage(trans('messages.transfer.revert.unauthorized'));
+        $this->initializeValidatorGeneric();
+
+        $walletAmount = $this->faker->randomFloat(2, 1, 999);
+
+        $this->user
+            ->person
+            ->wallet
+            ->shouldReceive('getTotalAmount')
+            ->andReturn($walletAmount)
+            ->once();
+
+        $params                         = $this->getDefaultParams();
+        $params['transfer_reverted_id'] = $this->faker->randomDigit;
 
         $this->service->create($params);
     }

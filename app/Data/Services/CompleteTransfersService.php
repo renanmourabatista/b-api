@@ -8,6 +8,7 @@ use App\Domain\UseCases\CompleteTransfers;
 use Carbon\Carbon;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CompleteTransfersService implements CompleteTransfers
 {
@@ -29,8 +30,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     public function authorizePendingTransfers(int $page = 1): void
     {
-        $itemsPerPage = 100;
-        $paginator    = $this->repository->searchBy(['status' => Transfer::STATUS_PENDING], $page, $itemsPerPage);
+        $paginator = $this->getPaginatedItems(Transfer::STATUS_PENDING, $page);
 
         foreach ($paginator->items() as $transfer) {
             try {
@@ -50,8 +50,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     public function notifyAuthorizedTransfers(int $page = 1): void
     {
-        $itemsPerPage = 100;
-        $paginator    = $this->repository->searchBy(['status' => Transfer::STATUS_AUTHORIZED], $page, $itemsPerPage);
+        $paginator = $this->getPaginatedItems(Transfer::STATUS_AUTHORIZED, $page);
 
         foreach ($paginator->items() as $transfer) {
             try {
@@ -67,6 +66,12 @@ class CompleteTransfersService implements CompleteTransfers
 
         $page++;
         $this->notifyAuthorizedTransfers($page);
+    }
+
+    private function getPaginatedItems(int $status, int $page): LengthAwarePaginator
+    {
+        $itemsPerPage = 100;
+        return $this->repository->searchBy(['status' => $status], $page, $itemsPerPage);
     }
 
     private function notify(Transfer $transfer): void

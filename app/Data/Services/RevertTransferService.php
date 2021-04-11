@@ -33,7 +33,7 @@ class RevertTransferService implements RevertTransfer
         $transfer = $this->repository->get($transferId);
         $params   = $this->createParams($transfer);
 
-        return $this->createTransfer->create($params);
+        return $this->createTransfer->create($params, true);
     }
 
     private function createParams(Transfer $transfer): array

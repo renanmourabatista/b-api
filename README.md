@@ -1,7 +1,7 @@
 ## Bank Api
 
 * docker-compose up
-* localhost:88
+* localhost:88/api
 
 ### Comandos do docker
 
@@ -29,3 +29,24 @@
 #### Notificar as transferencias dos Lojistas
 
 - `docker exec -it bank.api php artisan notify:transfers`
+
+### Rotas do projeto
+
+ A documentação completa das rotas é gerada com a **apidoc** 
+
+* `localhost:88/api/wallets/transfers/:id/revert` [POST]
+* `localhost:88/api/wallets/transfers` [PUT]
+
+### Usuários para teste em ambiente de desenvolvimento
+
+#### Usuário lojista
+* **email:** teste@lojista.com
+* **senha:** password
+
+#### Usuário comum 1
+* **email:** teste@comum.com
+* **senha:** password
+
+#### Usuário comum 2
+* **email:** teste@comum1.com
+* **senha:** password

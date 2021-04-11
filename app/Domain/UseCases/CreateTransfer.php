@@ -5,5 +5,5 @@ use App\Domain\Models\Transfer;
 
 interface CreateTransfer
 {
-    public function create(array $params): Transfer;
+    public function create(array $params, bool $isRevert = false): Transfer;
 }

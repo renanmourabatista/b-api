@@ -54,14 +54,14 @@ class RevertTransferTest extends TestCase
      */
     private function getUserToAuth()
     {
-        $user                       = \Mockery::mock(User::class)->makePartial();
-        $person                     = \Mockery::mock(Person::class)->makePartial();
-        $person->company            = null;
-        $user->person               = $person;
-        $user->person->wallet       = \Mockery::mock(Wallet::class)->makePartial();
-        $user->person->wallet->id   = $this->faker->randomDigit();
-        $transfer                   = \Mockery::mock(Transfer::class)->makePartial();
-        $transfer->id               = $this->faker->randomDigit();
+        $user                      = \Mockery::mock(User::class)->makePartial();
+        $person                    = \Mockery::mock(Person::class)->makePartial();
+        $person->company           = null;
+        $user->person              = $person;
+        $user->person->wallet      = \Mockery::mock(Wallet::class)->makePartial();
+        $user->person->wallet->id  = $this->faker->randomDigit();
+        $transfer                  = \Mockery::mock(Transfer::class)->makePartial();
+        $transfer->id              = $this->faker->randomDigit();
         $transfer->wallet_payer_id = $this->faker->randomDigit();
 
         $user->person->wallet->transfersReceived = new Collection([$transfer]);
@@ -84,12 +84,12 @@ class RevertTransferTest extends TestCase
 
         $params                         = [];
         $params['transfer_reverted_id'] = $transfer->id;
-        $params['wallet_payee_id']   = $transfer->wallet_payer_id;
+        $params['wallet_payee_id']      = $transfer->wallet_payer_id;
         $params['value']                = $transfer->value;
 
         $this->createTransferService
             ->shouldReceive('create')
-            ->with($params)
+            ->with($params, true)
             ->once();
 
         $this->service->revert($transfer->id);
@@ -104,7 +104,7 @@ class RevertTransferTest extends TestCase
         $this->expectErrorMessage(trans('messages.transfer.revert.unauthorized'));
 
         $transfer = $this->user->person->wallet->transfersReceived->first();
-        $id = $transfer->id + 1;
+        $id       = $transfer->id + 1;
 
         $this->service->revert($id);
     }

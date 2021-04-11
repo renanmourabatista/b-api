@@ -6,7 +6,9 @@ use App\Data\Contracts\Repositories\TransferRepository;
 use App\Data\Contracts\Validator;
 use App\Domain\Models\Transfer;
 use App\Domain\UseCases\CreateTransfer;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CreateTransferService implements CreateTransfer
 {
@@ -25,29 +27,36 @@ class CreateTransferService implements CreateTransfer
         $this->validator  = $validator;
     }
 
-    public function create(array $params): Transfer
+    private function getUser(): Authenticatable
     {
-        $this->validate($params);
+        return auth()->user();
+    }
 
-        $params['wallet_payer_id'] = auth()->user()->person->wallet->id;
+    public function create(array $params, bool $isRevert = false): Transfer
+    {
+        $this->validate($params, $isRevert);
+
+        $params['wallet_payer_id'] = $this->getUser()->person->wallet->id;
         $params['status']          = Transfer::STATUS_PENDING;
 
         return $this->repository->create($params);
     }
 
-    private function validate(array $params): void
+    private function validate(array $params, bool $isRevert): void
     {
         $this->validateData($params);
         $this->validateUserAShopkeeper();
         $this->validateNewTransferIsToSameWalletOfUser($params);
         $this->validateWalletHasFundsToTransfer($params);
+        $this->validateTransferHasMinimalValue($params);
+        $this->validateRevertRules($isRevert, $params);
     }
 
     private function validateData(array $params): void
     {
         $this->validator->setRules(
             [
-                'value'                => 'required|min:0.01',
+                'value'                => 'required',
                 'wallet_payee_id'      => 'required|exists:wallets,id',
                 'transfer_reverted_id' => 'nullable|exists:transfers,id'
             ]
@@ -68,28 +77,38 @@ class CreateTransferService implements CreateTransfer
 
     private function validateUserAShopkeeper(): void
     {
-        $user = auth()->user();
-
-        if ($user->person->isAShopkeeper()) {
+        if ($this->getUser()->person->isAShopkeeper()) {
             throw new AccessDeniedHttpException(trans('messages.transfer.store_owner.unauthorized'));
         }
     }
 
     private function validateNewTransferIsToSameWalletOfUser(array $params): void
     {
-        $user = auth()->user();
-
-        if ($user->person->wallet->id === ($params['wallet_payee_id'] ?? null)) {
+        if ($this->getUser()->person->wallet->id === ($params['wallet_payee_id'] ?? null)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.same_wallet.unauthorized'));
         }
     }
 
     private function validateWalletHasFundsToTransfer(array $params): void
     {
-        $user = auth()->user();
-
-        if ($user->person->wallet->getTotalAmount() < ($params['value'] ?? 0)) {
+        if ($this->getUser()->person->wallet->getTotalAmount() < ($params['value'] ?? 0)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.value.insufficient_funds'));
+        }
+    }
+
+    private function validateTransferHasMinimalValue(array $params): void
+    {
+        $minimalValue = 0.01;
+
+        if ( $minimalValue > (floatval($params['value'] ?? 0))) {
+            throw new BadRequestHttpException(trans('messages.transfer.value.min'));
+        }
+    }
+
+    private function validateRevertRules(bool $isRevert, array $params): void
+    {
+        if (!$isRevert && isset($params['transfer_reverted_id'])) {
+            throw new AccessDeniedHttpException(trans('messages.transfer.revert.unauthorized'));
         }
     }
 }
