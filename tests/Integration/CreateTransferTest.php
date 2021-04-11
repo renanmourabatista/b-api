@@ -33,7 +33,8 @@ class CreateTransferTest extends TestCase
 
         $data = [
             'value'           => $valueToTransfer,
-            'wallet_payee_id' => $walletPayee->id
+            'wallet_payee_id' => $walletPayee->id,
+            'transfer_reverted_id' => 1
         ];
 
         $response = $this->post('/api/wallets/transfers', $data, ['Accept' => 'application/json']);

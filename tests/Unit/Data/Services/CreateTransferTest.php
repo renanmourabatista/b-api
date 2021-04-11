@@ -245,28 +245,4 @@ class CreateTransferTest extends TestCase
 
         $this->service->create($params);
     }
-
-    /**
-     * @test
-     */
-    public function shouldFailWhenTryRevertANonRevertedTransfer()
-    {
-        $this->expectException(AccessDeniedHttpException::class);
-        $this->expectErrorMessage(trans('messages.transfer.revert.unauthorized'));
-        $this->initializeValidatorGeneric();
-
-        $walletAmount = $this->faker->randomFloat(2, 1, 999);
-
-        $this->user
-            ->person
-            ->wallet
-            ->shouldReceive('getTotalAmount')
-            ->andReturn($walletAmount)
-            ->once();
-
-        $params                         = $this->getDefaultParams();
-        $params['transfer_reverted_id'] = $this->faker->randomDigit;
-
-        $this->service->create($params);
-    }
 }

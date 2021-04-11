@@ -89,7 +89,7 @@ class RevertTransferTest extends TestCase
 
         $this->createTransferService
             ->shouldReceive('create')
-            ->with($params, true)
+            ->with($params)
             ->once();
 
         $this->service->revert($transfer->id);

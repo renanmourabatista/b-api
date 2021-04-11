@@ -32,9 +32,9 @@ class CreateTransferService implements CreateTransfer
         return auth()->user();
     }
 
-    public function create(array $params, bool $isRevert = false): Transfer
+    public function create(array $params): Transfer
     {
-        $this->validate($params, $isRevert);
+        $this->validate($params);
 
         $params['wallet_payer_id'] = $this->getUser()->person->wallet->id;
         $params['status']          = Transfer::STATUS_PENDING;
@@ -42,14 +42,13 @@ class CreateTransferService implements CreateTransfer
         return $this->repository->create($params);
     }
 
-    private function validate(array $params, bool $isRevert): void
+    private function validate(array $params): void
     {
         $this->validateData($params);
         $this->validateUserAShopkeeper();
         $this->validateNewTransferIsToSameWalletOfUser($params);
         $this->validateWalletHasFundsToTransfer($params);
         $this->validateTransferHasMinimalValue($params);
-        $this->validateRevertRules($isRevert, $params);
     }
 
     private function validateData(array $params): void
@@ -102,13 +101,6 @@ class CreateTransferService implements CreateTransfer
 
         if ( $minimalValue > (floatval($params['value'] ?? 0))) {
             throw new BadRequestHttpException(trans('messages.transfer.value.min'));
-        }
-    }
-
-    private function validateRevertRules(bool $isRevert, array $params): void
-    {
-        if (!$isRevert && isset($params['transfer_reverted_id'])) {
-            throw new AccessDeniedHttpException(trans('messages.transfer.revert.unauthorized'));
         }
     }
 }

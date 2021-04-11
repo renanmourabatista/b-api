@@ -33,14 +33,14 @@ class RevertTransferService implements RevertTransfer
         $transfer = $this->repository->get($transferId);
         $params   = $this->createParams($transfer);
 
-        return $this->createTransfer->create($params, true);
+        return $this->createTransfer->create($params);
     }
 
     private function createParams(Transfer $transfer): array
     {
         $params                         = [];
         $params['transfer_reverted_id'] = $transfer->id;
-        $params['wallet_payee_id']   = $transfer->wallet_payer_id;
+        $params['wallet_payee_id']      = $transfer->wallet_payer_id;
         $params['value']                = $transfer->value;
 
         return $params;

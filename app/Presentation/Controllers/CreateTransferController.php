@@ -67,6 +67,7 @@ class CreateTransferController extends Controller implements ControllerContract
     public function handle(Request $request): JsonResponse
     {
         try {
+            $request->offsetUnset('transfer_reverted_id');
             $result = $this->service->create($request->all());
 
             return new JsonResponse($result, Response::HTTP_CREATED);
