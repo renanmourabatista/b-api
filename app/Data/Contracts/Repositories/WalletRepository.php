@@ -6,5 +6,5 @@ use App\Domain\Models\Wallet;
 
 interface WalletRepository extends FindRepository
 {
-    public function get(int $id): Wallet;
+    public function get(int $idModel): Wallet;
 }

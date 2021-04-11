@@ -17,7 +17,7 @@ class ValidatorServiceProvider extends ServiceProvider
     {
         $this->app->bind(Validator::class, function($app)
         {
-            return new ValidatorHelper();
+            return $app->make(ValidatorHelper::class);
         });
     }
 

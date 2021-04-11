@@ -16,7 +16,7 @@ class RevertTransferController extends Controller implements ControllerContract
         $this->service = $service;
     }
 
-    public function handle(Request|null $request): JsonResponse
+    public function handle(Request $request): JsonResponse
     {
         $result = $this->service->revert((int)$request->id);
         return new JsonResponse($result, Response::HTTP_OK);

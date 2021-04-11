@@ -19,9 +19,9 @@ class TransferRepository implements TransferRepositoryContract
         return $this->model()::create($params);
     }
 
-    public function get(int $id): Transfer
+    public function get(int $idModel): Transfer
     {
-        return $this->model()::find($id);
+        return $this->model()::find($idModel);
     }
 
     protected function exactlyMatchFields(): array
@@ -29,8 +29,8 @@ class TransferRepository implements TransferRepositoryContract
         return ['status'];
     }
 
-    public function update(array $params, int $id): bool
+    public function update(array $params, int $idModel): bool
     {
-        return $this->model()::find($id)->update($params);
+        return $this->model()::find($idModel)->update($params);
     }
 }

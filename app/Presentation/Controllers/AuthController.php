@@ -2,6 +2,8 @@
 
 namespace App\Presentation\Controllers;
 
+use Illuminate\Http\JsonResponse;
+
 class AuthController extends Controller
 {
     /**
@@ -17,13 +19,14 @@ class AuthController extends Controller
     /**
      * Get a JWT via given credentials.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function login()
     {
         $credentials = request(['email', 'password']);
 
-        if (!$token = auth()->attempt($credentials)) {
+        $token = auth()->attempt($credentials);
+        if (!$token) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -33,9 +36,9 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function me()
+    public function user(): JsonResponse
     {
         return response()->json(auth()->user());
     }
@@ -43,7 +46,7 @@ class AuthController extends Controller
     /**
      * Log the user out (Invalidate the token).
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function logout()
     {
@@ -55,7 +58,7 @@ class AuthController extends Controller
     /**
      * Refresh a token.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refresh()
     {
@@ -67,7 +70,7 @@ class AuthController extends Controller
      *
      * @param string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function respondWithToken($token)
     {

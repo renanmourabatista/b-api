@@ -21,7 +21,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     public function __construct(
         TransferRepository $repository,
-        ClientInterface $api,
+        ClientInterface $api
     ) {
         $this->repository = $repository;
         $this->api        = $api;
@@ -35,7 +35,7 @@ class CompleteTransfersService implements CompleteTransfers
         foreach ($paginator->items() as $transfer) {
             try {
                 $this->authorize($transfer);
-            } catch (ClientException $e) {
+            } catch (ClientException $exception) {
                 continue;
             }
         }
@@ -56,7 +56,7 @@ class CompleteTransfersService implements CompleteTransfers
         foreach ($paginator->items() as $transfer) {
             try {
                 $this->notify($transfer);
-            } catch (ClientException $e) {
+            } catch (ClientException $exception) {
                 continue;
             }
         }

@@ -24,7 +24,10 @@ class CreateTransferTest extends TestCase
 
     private Validator $validator;
 
-    private User|Mock $user;
+    /**
+     * @var Mock|User
+     */
+    private $user;
 
     protected function setUp(): void
     {
@@ -122,7 +125,10 @@ class CreateTransferTest extends TestCase
         $this->service->create($params);
     }
 
-    private function getUserToAuth(): User|Mock
+    /**
+     * @return User|Mock
+     */
+    private function getUserToAuth()
     {
         $user                     = \Mockery::mock(User::class)->makePartial();
         $person                   = \Mockery::mock(Person::class)->makePartial();

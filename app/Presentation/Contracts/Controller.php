@@ -7,5 +7,5 @@ use Illuminate\Http\Request;
 
 interface Controller
 {
-    public function handle(?Request $request): JsonResponse;
+    public function handle(Request $request): JsonResponse;
 }

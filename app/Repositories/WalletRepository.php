@@ -14,9 +14,9 @@ class WalletRepository implements WalletRepositoryContract
         return Wallet::class;
     }
 
-    public function get(int $id): Wallet
+    public function get(int $idModel): Wallet
     {
-        return $this->model()::find($id);
+        return $this->model()::find($idModel);
     }
 
     protected function exactlyMatchFields(): array

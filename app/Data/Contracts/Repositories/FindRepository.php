@@ -9,5 +9,5 @@ interface FindRepository extends BaseRepository
 {
     public function searchBy(array $parameters, int $page = 1, int $itemsPerPage = 10): LengthAwarePaginator;
 
-    public function get(int $id): Model;
+    public function get(int $idModel): Model;
 }

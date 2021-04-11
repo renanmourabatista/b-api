@@ -15,16 +15,16 @@ class RevertTransferService implements RevertTransfer
 
     private Validator $validator;
 
-    private CreateTransfer $createTransferService;
+    private CreateTransfer $createTransfer;
 
     public function __construct(
         TransferRepository $repository,
         Validator $validator,
-        CreateTransfer $createTransferService
+        CreateTransfer $createTransfer
     ) {
-        $this->repository            = $repository;
-        $this->validator             = $validator;
-        $this->createTransferService = $createTransferService;
+        $this->repository     = $repository;
+        $this->validator      = $validator;
+        $this->createTransfer = $createTransfer;
     }
 
     public function revert(int $transferId): Transfer
@@ -33,11 +33,12 @@ class RevertTransferService implements RevertTransfer
         $transfer = $this->repository->get($transferId);
         $params   = $this->createParams($transfer);
 
-        return $this->createTransferService->create($params);
+        return $this->createTransfer->create($params);
     }
 
     private function createParams(Transfer $transfer): array
     {
+        $params                         = [];
         $params['transfer_reverted_id'] = $transfer->id;
         $params['wallet_receiver_id']   = $transfer->wallet_sender_id;
         $params['value']                = $transfer->value;
