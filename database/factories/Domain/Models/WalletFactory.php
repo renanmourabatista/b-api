@@ -2,6 +2,7 @@
 
 namespace Database\Factories\Domain\Models;
 
+use App\Domain\Models\Person;
 use App\Domain\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,7 +14,7 @@ class WalletFactory extends Factory
     {
         return [
             'amount'    => $this->faker->randomFloat(2, 1, 999),
-            'person_id' => null
+            'person_id' => Person::factory()->create()->id
         ];
     }
 }

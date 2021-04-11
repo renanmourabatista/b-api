@@ -29,7 +29,7 @@ class TransferRepository implements TransferRepositoryContract
         return ['status'];
     }
 
-    public function update(array $params, int $id): Transfer
+    public function update(array $params, int $id): bool
     {
         return $this->model()::find($id)->update($params);
     }

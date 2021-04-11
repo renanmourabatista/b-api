@@ -8,7 +8,7 @@ interface TransferRepository extends FindRepository
 {
     public function create(array $params): Transfer;
 
-    public function update(array $params, int $id): Transfer;
+    public function update(array $params, int $id): bool;
 
     public function get(int $id): Transfer;
 }
