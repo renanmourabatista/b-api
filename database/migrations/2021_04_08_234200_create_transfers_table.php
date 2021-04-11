@@ -19,13 +19,13 @@ class CreateTransfersTable extends Migration
             $table->decimal('value', 10);
             $table->integer('status');
 
-            $table->unsignedBigInteger('wallet_sender_id');
-            $table->unsignedBigInteger('wallet_receiver_id');
+            $table->unsignedBigInteger('wallet_payer_id');
+            $table->unsignedBigInteger('wallet_payee_id');
             $table->dateTime('notification_date')->nullable();
             $table->unsignedBigInteger('transfer_reverted_id')->nullable();
 
-            $table->foreign('wallet_sender_id')->references('id')->on('wallets');
-            $table->foreign('wallet_receiver_id')->references('id')->on('wallets');
+            $table->foreign('wallet_payer_id')->references('id')->on('wallets');
+            $table->foreign('wallet_payee_id')->references('id')->on('wallets');
 
             $table->timestamps();
         });
@@ -43,8 +43,8 @@ class CreateTransfersTable extends Migration
     public function down()
     {
         Schema::table('transfers', function (Blueprint $table) {
-            $table->dropForeign(['wallet_sender_id']);
-            $table->dropForeign(['wallet_receiver_id']);
+            $table->dropForeign(['wallet_payer_id']);
+            $table->dropForeign(['wallet_payee_id']);
             $table->dropForeign(['transfer_reverted_id']);
         });
 

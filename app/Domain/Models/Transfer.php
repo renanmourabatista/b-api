@@ -17,19 +17,19 @@ class Transfer extends Model
         'value',
         'status',
         'notification_date',
-        'wallet_sender_id',
-        'wallet_receiver_id',
+        'wallet_payer_id',
+        'wallet_payee_id',
         'transfer_reverted_id'
     ];
 
-    public function senderWallet(): BelongsTo
+    public function payerWallet(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class, 'wallet_sender_id', 'id');
+        return $this->belongsTo(Wallet::class, 'wallet_payer_id', 'id');
     }
 
-    public function receiverWallet(): BelongsTo
+    public function payeeWallet(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class, 'wallet_receiver_id', 'id');
+        return $this->belongsTo(Wallet::class, 'wallet_payee_id', 'id');
     }
 
     public function revertedFrom(): BelongsTo

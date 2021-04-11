@@ -32,8 +32,8 @@ class RevertTransferTest extends TestCase
 
         $transfer = Transfer::factory()->create(
             [
-                'wallet_sender_id'   => $walletPayer->id,
-                'wallet_receiver_id' => $walletPayee->id,
+                'wallet_payer_id'   => $walletPayer->id,
+                'wallet_payee_id' => $walletPayee->id,
                 'status'             => Transfer::STATUS_AUTHORIZED,
                 'value'              => $valueToTransfer
             ]

@@ -93,8 +93,8 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->owner = \Mockery::mock(Person::class);
-        $transfer->receiverWallet
+        $transfer->payeeWallet->owner = \Mockery::mock(Person::class);
+        $transfer->payeeWallet
             ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(true);
@@ -120,8 +120,8 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->owner = \Mockery::mock(User::class);
-        $transfer->receiverWallet
+        $transfer->payeeWallet->owner = \Mockery::mock(User::class);
+        $transfer->payeeWallet
             ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(false);
@@ -143,8 +143,8 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->owner = \Mockery::mock(User::class);
-        $transfer->receiverWallet
+        $transfer->payeeWallet->owner = \Mockery::mock(User::class);
+        $transfer->payeeWallet
             ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(true);
@@ -181,17 +181,17 @@ class CompleteTransfersTest extends TestCase
 
     private function shouldUpdateWalletsAmounts(Transfer $transfer, Collection $items, int $lastPage): void
     {
-        $valueToSender   = $transfer->senderWallet->amount - $transfer->value;
-        $valueToReceiver = $transfer->receiverWallet->amount + $transfer->value;
+        $valueToPayer   = $transfer->payerWallet->amount - $transfer->value;
+        $valueToPayee = $transfer->payeeWallet->amount + $transfer->value;
 
-        $transfer->receiverWallet
+        $transfer->payeeWallet
             ->shouldReceive('update')
-            ->with(['amount' => $valueToReceiver])
+            ->with(['amount' => $valueToPayee])
             ->times($items->count() * $lastPage);
 
-        $transfer->senderWallet
+        $transfer->payerWallet
             ->shouldReceive('update')
-            ->with(['amount' => $valueToSender])
+            ->with(['amount' => $valueToPayer])
             ->times($items->count() * $lastPage);;
     }
 
@@ -200,10 +200,10 @@ class CompleteTransfersTest extends TestCase
         $transfer                         = \Mockery::mock(Transfer::class)->makePartial();
         $transfer->id                     = $this->faker->randomDigit;
         $transfer->value                  = $this->faker->randomFloat(2, 1, 999);
-        $transfer->senderWallet           = \Mockery::mock(Wallet::class)->makePartial();
-        $transfer->receiverWallet         = \Mockery::mock(Wallet::class)->makePartial();
-        $transfer->senderWallet->amount   = $transfer->value + $this->faker->randomFloat(2, 1, 999);
-        $transfer->receiverWallet->amount = 0;
+        $transfer->payerWallet           = \Mockery::mock(Wallet::class)->makePartial();
+        $transfer->payeeWallet         = \Mockery::mock(Wallet::class)->makePartial();
+        $transfer->payerWallet->amount   = $transfer->value + $this->faker->randomFloat(2, 1, 999);
+        $transfer->payeeWallet->amount = 0;
 
         return $transfer;
     }

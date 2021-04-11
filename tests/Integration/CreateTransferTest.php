@@ -32,8 +32,8 @@ class CreateTransferTest extends TestCase
         $this->actingAs($userPayer);
 
         $data = [
-            'value'              => $valueToTransfer,
-            'wallet_receiver_id' => $walletPayee->id
+            'value'           => $valueToTransfer,
+            'wallet_payee_id' => $walletPayee->id
         ];
 
         $response = $this->post('/api/wallets/transfers', $data, ['Accept' => 'application/json']);

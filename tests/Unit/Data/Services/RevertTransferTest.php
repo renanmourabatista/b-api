@@ -62,7 +62,7 @@ class RevertTransferTest extends TestCase
         $user->person->wallet->id   = $this->faker->randomDigit();
         $transfer                   = \Mockery::mock(Transfer::class)->makePartial();
         $transfer->id               = $this->faker->randomDigit();
-        $transfer->wallet_sender_id = $this->faker->randomDigit();
+        $transfer->wallet_payer_id = $this->faker->randomDigit();
 
         $user->person->wallet->transfersReceived = new Collection([$transfer]);
 
@@ -84,7 +84,7 @@ class RevertTransferTest extends TestCase
 
         $params                         = [];
         $params['transfer_reverted_id'] = $transfer->id;
-        $params['wallet_receiver_id']   = $transfer->wallet_sender_id;
+        $params['wallet_payee_id']   = $transfer->wallet_payer_id;
         $params['value']                = $transfer->value;
 
         $this->createTransferService

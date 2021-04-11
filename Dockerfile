@@ -8,7 +8,9 @@ LABEL version="1.0"
 RUN apk update \
   && apk upgrade \
   && apk add curl bash python3 py3-pip g++ make autoconf\
+  && apk add --update nodejs npm \
   && rm -rf /var/cache/apk/* \
+  && npm install apidoc -g \
   && curl -sS http://getcomposer.org/installer | php -- --filename=composer \
   && chmod a+x composer \
   && mv composer /usr/local/bin/composer \

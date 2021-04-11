@@ -5,8 +5,8 @@ return [
     'transfer.value.insufficient_funds'    => 'Insufficient funds',
     'transfer.value.required'              => 'Value is required',
     'transfer.value.min'                   => 'Please enter a minimum value of :min.',
-    'transfer.wallet_receiver_id.required' => 'Receiver wallet is required.',
-    'transfer.wallet_receiver_id.exists'   => 'Receiver wallet not found.',
+    'transfer.wallet_payee_id.required' => 'Payee wallet is required.',
+    'transfer.wallet_payee_id.exists'   => 'Payee wallet not found.',
     'transfer.transfer_reverted_id.exists' => 'Transfer can\'t exists.',
     'transfer.revert.unauthorized'         => 'It is not allowed to reverse this transfer.'
 ];

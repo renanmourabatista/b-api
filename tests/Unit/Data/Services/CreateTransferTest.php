@@ -94,15 +94,15 @@ class CreateTransferTest extends TestCase
     {
         $rules = [
             'value'                => 'required|min:0.01',
-            'wallet_receiver_id'   => 'required|exists:wallets,id',
+            'wallet_payee_id'   => 'required|exists:wallets,id',
             'transfer_reverted_id' => 'nullable|exists:transfers,id'
         ];
 
         $messages = [
             'value.required'              => trans('messages.transfer.value.required'),
             'value.min'                   => trans('messages.transfer.value.min'),
-            'wallet_receiver_id.required' => trans('messages.transfer.wallet_receiver_id.required'),
-            'wallet_receiver_id.exists'   => trans('messages.transfer.wallet_receiver_id.exists'),
+            'wallet_payee_id.required' => trans('messages.transfer.wallet_payee_id.required'),
+            'wallet_payee_id.exists'   => trans('messages.transfer.wallet_payee_id.exists'),
             'transfer_reverted_id.exists' => trans('messages.transfer.transfer_reverted_id.exists')
         ];
 
@@ -150,8 +150,8 @@ class CreateTransferTest extends TestCase
     private function getDefaultParams(): array
     {
         return [
-            'wallet_receiver_id' => $this->user->person->wallet->id + 1,
-            'wallet_sender_id'   => $this->user->person->wallet->id,
+            'wallet_payee_id' => $this->user->person->wallet->id + 1,
+            'wallet_payer_id'   => $this->user->person->wallet->id,
             'status'             => Transfer::STATUS_PENDING
         ];
     }
@@ -188,7 +188,7 @@ class CreateTransferTest extends TestCase
         $this->actingAs($user);
 
         $params                       = $this->getDefaultParams();
-        $params['wallet_receiver_id'] = $user->person->wallet->id;
+        $params['wallet_payee_id'] = $user->person->wallet->id;
 
         $this->service->create($params);
     }

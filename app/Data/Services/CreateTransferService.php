@@ -29,8 +29,8 @@ class CreateTransferService implements CreateTransfer
     {
         $this->validate($params);
 
-        $params['wallet_sender_id'] = auth()->user()->person->wallet->id;
-        $params['status']           = Transfer::STATUS_PENDING;
+        $params['wallet_payer_id'] = auth()->user()->person->wallet->id;
+        $params['status']          = Transfer::STATUS_PENDING;
 
         return $this->repository->create($params);
     }
@@ -48,18 +48,18 @@ class CreateTransferService implements CreateTransfer
         $this->validator->setRules(
             [
                 'value'                => 'required|min:0.01',
-                'wallet_receiver_id'   => 'required|exists:wallets,id',
+                'wallet_payee_id'      => 'required|exists:wallets,id',
                 'transfer_reverted_id' => 'nullable|exists:transfers,id'
             ]
         );
 
         $this->validator->setMessages(
             [
-                'value.required'                     => trans('messages.transfer.value.required'),
-                'value.min'                          => trans('messages.transfer.value.min'),
-                'wallet_receiver_id.required'        => trans('messages.transfer.wallet_receiver_id.required'),
-                'wallet_receiver_id.exists'          => trans('messages.transfer.wallet_receiver_id.exists'),
-                'transfer_reverted_id.exists'        => trans('messages.transfer.transfer_reverted_id.exists')
+                'value.required'              => trans('messages.transfer.value.required'),
+                'value.min'                   => trans('messages.transfer.value.min'),
+                'wallet_payee_id.required'    => trans('messages.transfer.wallet_payee_id.required'),
+                'wallet_payee_id.exists'      => trans('messages.transfer.wallet_payee_id.exists'),
+                'transfer_reverted_id.exists' => trans('messages.transfer.transfer_reverted_id.exists')
             ]
         );
 
@@ -70,7 +70,7 @@ class CreateTransferService implements CreateTransfer
     {
         $user = auth()->user();
 
-        if($user->person->isAShopkeeper()) {
+        if ($user->person->isAShopkeeper()) {
             throw new AccessDeniedHttpException(trans('messages.transfer.store_owner.unauthorized'));
         }
     }
@@ -79,7 +79,7 @@ class CreateTransferService implements CreateTransfer
     {
         $user = auth()->user();
 
-        if($user->person->wallet->id === ($params['wallet_receiver_id'] ?? null)) {
+        if ($user->person->wallet->id === ($params['wallet_payee_id'] ?? null)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.same_wallet.unauthorized'));
         }
     }
@@ -88,7 +88,7 @@ class CreateTransferService implements CreateTransfer
     {
         $user = auth()->user();
 
-        if($user->person->wallet->getTotalAmount() < ($params['value'] ?? 0)) {
+        if ($user->person->wallet->getTotalAmount() < ($params['value'] ?? 0)) {
             throw new AccessDeniedHttpException(trans('messages.transfer.value.insufficient_funds'));
         }
     }

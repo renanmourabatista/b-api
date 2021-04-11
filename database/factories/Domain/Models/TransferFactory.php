@@ -22,8 +22,8 @@ class TransferFactory extends Factory
                 ]
             ),
             'notification_date'    => $this->faker->dateTime(),
-            'wallet_sender_id'     => Wallet::factory()->create()->id,
-            'wallet_receiver_id'   => Wallet::factory()->create()->id,
+            'wallet_payer_id'     => Wallet::factory()->create()->id,
+            'wallet_payee_id'   => Wallet::factory()->create()->id,
             'transfer_reverted_id' => null,
         ];
     }

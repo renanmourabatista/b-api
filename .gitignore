@@ -14,3 +14,4 @@ yarn-error.log
 .idea
 envs/.env.docker
 envs/.env
+doc

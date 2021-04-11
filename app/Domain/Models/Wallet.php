@@ -15,12 +15,12 @@ class Wallet extends Model
 
     public function transfersSend(): HasMany
     {
-        return $this->hasMany(Transfer::class, 'wallet_sender_id', 'id');
+        return $this->hasMany(Transfer::class, 'wallet_payer_id', 'id');
     }
 
     public function pendingTransfersSend(): HasMany
     {
-        return $this->hasMany(Transfer::class, 'wallet_sender_id', 'id')
+        return $this->hasMany(Transfer::class, 'wallet_payer_id', 'id')
             ->where('status', '=',
             Transfer::STATUS_PENDING
             );
@@ -33,7 +33,7 @@ class Wallet extends Model
 
     public function transfersReceived(): HasMany
     {
-        return $this->hasMany(Transfer::class, 'wallet_receiver_id', 'id')
+        return $this->hasMany(Transfer::class, 'wallet_payee_id', 'id')
             ->where('status', '=', Transfer::STATUS_AUTHORIZED);
     }
 

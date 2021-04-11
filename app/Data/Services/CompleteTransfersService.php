@@ -71,7 +71,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     private function notify(Transfer $transfer): void
     {
-        if (!$transfer->receiverWallet->owner->isAShopkeeper()) {
+        if (!$transfer->payeeWallet->owner->isAShopkeeper()) {
             return;
         }
 
@@ -118,13 +118,13 @@ class CompleteTransfersService implements CompleteTransfers
 
     private function updateWalletsAmounts(Transfer $transfer): void
     {
-        $senderWallet   = $transfer->senderWallet;
-        $receiverWallet = $transfer->receiverWallet;
+        $payerWallet = $transfer->payerWallet;
+        $payeeWallet = $transfer->payeeWallet;
 
-        $senderAmount   = $senderWallet->amount - $transfer->value;
-        $receiverAmount = $receiverWallet->amount + $transfer->value;
+        $payerAmount = $payerWallet->amount - $transfer->value;
+        $payeeAmount = $payeeWallet->amount + $transfer->value;
 
-        $senderWallet->update(['amount' => $senderAmount]);
-        $receiverWallet->update(['amount' => $receiverAmount]);
+        $payerWallet->update(['amount' => $payerAmount]);
+        $payeeWallet->update(['amount' => $payeeAmount]);
     }
 }

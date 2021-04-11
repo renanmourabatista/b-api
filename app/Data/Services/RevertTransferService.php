@@ -40,7 +40,7 @@ class RevertTransferService implements RevertTransfer
     {
         $params                         = [];
         $params['transfer_reverted_id'] = $transfer->id;
-        $params['wallet_receiver_id']   = $transfer->wallet_sender_id;
+        $params['wallet_payee_id']   = $transfer->wallet_payer_id;
         $params['value']                = $transfer->value;
 
         return $params;

@@ -27,7 +27,7 @@ class NotfyTransfersTest extends TestCase
         Transfer::factory()->count($numberOfTransfers)->create(
             [
                 'status'             => Transfer::STATUS_AUTHORIZED,
-                'wallet_receiver_id' => $walletPayee->id
+                'wallet_payee_id' => $walletPayee->id
             ]
         );
 

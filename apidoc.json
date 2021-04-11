@@ -1,0 +1,7 @@
+{
+  "name": "Api Bank",
+  "version": "1.0.0",
+  "description": "Uma api básica de banco para transferencias",
+  "title": "Api Bank",
+  "url" : "localhost:88/api"
+}
