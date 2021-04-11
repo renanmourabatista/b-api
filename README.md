@@ -1,14 +1,22 @@
 ## Bank Api
 
-* docker-compose up
-* localhost:88/api
+### Ambiente
+
+- Para subir a aplicação é necessário copiar conteúdo do arquivo `.env.example` para o arquivo `.env` dentro da pasta
+`envs` na raiz do projeto
+  
+#### Host
+
+- `localhost:88/api`
 
 ### Comandos do docker
-
+#### Subir a aplicação
+- `docker-compose up`
 #### Executar as migrations
 - `docker exec -it bank.api php artisan migrate`
 #### Popular o banco  
-- `docker exec -it bank.api php artisan db:seed`
+- `docker exec -it bank.api php artisan db:seed`, utilize somente na primeira vez que rodar o projeto, pois irá gerar todos 
+os dados necessários para o ambiente de desenvolvimento
 #### Executar os testes 
 - `docker exec -it bank.api php vendor/phpunit/phpunit/phpunit --configuration phpunit.xml /var/www/tests`
 
@@ -24,23 +32,18 @@
 
 ### Comandos do projeto
 
-#### Autorizar as transações
+#### Autorizar as transferências
 
 - `docker exec -it bank.api php artisan authorize:transfers`
 
-#### Notificar as transferencias dos Lojistas
+#### Notificar as transferências dos Lojistas
 
 - `docker exec -it bank.api php artisan notify:transfers`
 
-### Principais rotas do projeto
+### Rotas
 
- A documentação completa das rotas é gerada com a **apidoc** 
-
-* `localhost:88/api/wallets/transfers/:id/revert` [POST]
-* `localhost:88/api/wallets/transfers` [PUT]
-
-
-* Pra baixar a collection do **postman** [clique aqui](https://www.getpostman.com/collections/961aa06f11fc06f78362)
+* A documentação das rotas é gerada com a **apidoc**
+* Para baixar também a collection do **Postman** com todas as rotas [clique aqui](https://www.getpostman.com/collections/961aa06f11fc06f78362)
 
 ### Usuários para teste em ambiente de desenvolvimento
 
