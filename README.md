@@ -9,6 +9,8 @@
 - `docker exec -it bank.api php artisan migrate`
 #### Popular o banco  
 - `docker exec -it bank.api php artisan db:seed`
+#### Executar os testes 
+- `docker exec -it bank.api php vendor/phpunit/phpunit/phpunit --configuration phpunit.xml /var/www/tests`
 
 #### Comando para verificar qualidade do código
 
