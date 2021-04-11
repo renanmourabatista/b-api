@@ -47,9 +47,9 @@
 * **senha:** password
 
 #### Usuário comum 1
-* **email:** teste@comum.com
+* **email:** teste@comum1.com
 * **senha:** password
 
 #### Usuário comum 2
-* **email:** teste@comum1.com
+* **email:** teste@comum2.com
 * **senha:** password
