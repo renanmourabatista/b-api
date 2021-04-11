@@ -5,6 +5,7 @@ namespace Tests\Unit\Data\Services;
 use App\Data\Contracts\Repositories\TransferRepository;
 use App\Data\Contracts\Repositories\WalletRepository;
 use App\Data\Services\CompleteTransfersService;
+use App\Domain\Models\Person;
 use App\Domain\Models\Transfer;
 use App\Domain\Models\User;
 use App\Domain\Models\Wallet;
@@ -92,9 +93,9 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->user = \Mockery::mock(User::class);
+        $transfer->receiverWallet->owner = \Mockery::mock(Person::class);
         $transfer->receiverWallet
-            ->user
+            ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(true);
 
@@ -119,9 +120,9 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->user = \Mockery::mock(User::class);
+        $transfer->receiverWallet->owner = \Mockery::mock(User::class);
         $transfer->receiverWallet
-            ->user
+            ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(false);
 
@@ -142,9 +143,9 @@ class CompleteTransfersTest extends TestCase
     {
         $transfer                       = $this->getTransferMock();
         $items                          = new Collection([$transfer]);
-        $transfer->receiverWallet->user = \Mockery::mock(User::class);
+        $transfer->receiverWallet->owner = \Mockery::mock(User::class);
         $transfer->receiverWallet
-            ->user
+            ->owner
             ->shouldReceive('isAShopkeeper')
             ->andReturn(true);
 
@@ -324,7 +325,7 @@ class CompleteTransfersTest extends TestCase
                    ],
                    $transfer->id
             )
-            ->andReturn($transfer)
+            ->andReturn(true)
             ->times($items->count() * $lastPage);
     }
 
@@ -337,7 +338,7 @@ class CompleteTransfersTest extends TestCase
                    ],
                    $transfer->id
             )
-            ->andReturn($transfer)
+            ->andReturn(true)
             ->times($items->count() * $lastPage);
     }
 }

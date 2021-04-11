@@ -15,7 +15,7 @@ class AuthorizeTransfersTest extends TestCase
      */
     public function shouldCompleteTransfers()
     {
-        $numberOfTransfers = $this->faker->numberBetween(1, 99);
+        $numberOfTransfers = $this->faker->numberBetween(1, 10);
 
         Transfer::factory()->count($numberOfTransfers)->create(['status' => Transfer::STATUS_PENDING]);
 

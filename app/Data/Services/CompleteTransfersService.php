@@ -71,7 +71,7 @@ class CompleteTransfersService implements CompleteTransfers
 
     private function notify(Transfer $transfer): void
     {
-        if (!$transfer->receiverWallet->user->isAShopkeeper()) {
+        if (!$transfer->receiverWallet->owner->isAShopkeeper()) {
             return;
         }
 
