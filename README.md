@@ -30,12 +30,15 @@
 
 - `docker exec -it bank.api php artisan notify:transfers`
 
-### Rotas do projeto
+### Principais rotas do projeto
 
  A documentação completa das rotas é gerada com a **apidoc** 
 
 * `localhost:88/api/wallets/transfers/:id/revert` [POST]
 * `localhost:88/api/wallets/transfers` [PUT]
+
+
+* Pra baixar a collection do **postman** [clique aqui](https://www.getpostman.com/collections/961aa06f11fc06f78362)
 
 ### Usuários para teste em ambiente de desenvolvimento
 
